@@ -1,6 +1,6 @@
 #####################################################################
 #                     GESTIONE MAGAZZINO 1.0                        #
-#           a Python program by Cristiano Esposito ¢2021            #
+#           a Python program by Cristiano Esposito ©2021            #
 #                                                                   #
 #     Gestione del carico e scarico merce in un magazzino con       #
 #         valorizzazione del prezzo medio della giacenza            #

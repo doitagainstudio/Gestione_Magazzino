@@ -1,6 +1,6 @@
 # **GESTIONE MAGAZZINO v1.0**
 
-## Realizzato da Cristiano Esposito ¢2021
+## Realizzato da Cristiano Esposito ©2021
 <br>
 Realizzato in Python, questo programma consente di gestire i carichi e gli scarichi di un magazzino, appoggiandosi a un
 database locale in Sqlite3. A ogni movimentazione della merce, viene calcolato anche il valore della giacenza in
