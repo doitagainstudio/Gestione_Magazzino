@@ -4,7 +4,7 @@
 #                                                                   #
 #     Gestione del carico e scarico merce in un magazzino con       #
 #         valorizzazione del prezzo medio della giacenza            #
-#         secondo metodologia FIFO (First In First Out)             #
+#         secondo metodologia FIFO (First In First Out).            #
 #                                                                   #
 #####################################################################
 
