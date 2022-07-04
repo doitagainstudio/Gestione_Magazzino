@@ -11,7 +11,6 @@
 import datetime
 import sqlite3
 from sqlite3 import Error
-
 import pandas as pd
 
 
@@ -20,11 +19,10 @@ def connect_db(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file, detect_types=sqlite3.PARSE_DECLTYPES |
-                                                     sqlite3.PARSE_COLNAMES)
+                               sqlite3.PARSE_COLNAMES)
         return conn
     except Error as e:
         print(e)
-
     return conn
 
 
@@ -61,11 +59,6 @@ def insert_query(conn, insert_table_sql, data):
 
 # Funzione per effettuare carico merce in magazzino e ricalcolo del valore medio giacenza
 def carico(conn):
-    global ultima_giacenza, old_prezzo_medio, ultimo_carico, ultimo_valore_carico
-    ultima_giacenza = 0
-    old_prezzo_medio = 0
-    ultimo_carico = 0
-    ultimo_valore_carico = 0
     now = datetime.datetime.now().replace(microsecond=0)
     carico = float(input('Inserire q.tà carico: \n'))
     val_carico = float(input('Inserire valore carico unitario: \n'))
@@ -75,15 +68,14 @@ def carico(conn):
         cursor = select_query(conn, sql_select_giacenza)
         for row in cursor:
             ultima_giacenza = row['giacenza']
-
         cursor = select_query(conn, sql_select_ultimocarico)
         for row in cursor:
             ultimo_carico = row['entrata']
             ultimo_valore_carico = row['prezzo_carico']
-
         nuova_giacenza = (carico + ultima_giacenza)
         if ultima_giacenza > 0:
-            val_medio = round((ultimo_valore_carico * ultima_giacenza + val_carico * carico) / nuova_giacenza, 3)
+            val_medio = round(
+                (ultimo_valore_carico * ultima_giacenza + val_carico * carico) / nuova_giacenza, 3)
         else:
             val_medio = round(val_carico, 3)
         sql_insert_giacenza = """INSERT INTO movimenti (date, entrata, prezzo_carico, prezzo_medio, giacenza) VALUES 
@@ -94,15 +86,9 @@ def carico(conn):
 
 # Funzione per effettuare scarico merce dal magazzino e ricalcolo del valore medio giacenza
 def scarico(conn):
-    global ultima_giacenza, old_prezzo_medio, ultimo_carico, ultimo_valore_carico, penultimo_valore_carico
-    penultimo_valore_carico = 0
-    ultima_giacenza = 0
-    old_prezzo_medio = 0
-    ultimo_carico = 0
-    ultimo_valore_carico = 0
     now = datetime.datetime.now().replace(microsecond=0)
     scarico = float(input('Inserire q.tà scarico: \n'))
-    sql_select_penultimocarico = """SELECT prezzo_carico FROM movimenti WHERE entrata IS NOT NULL ORDER BY id DESC 
+    sql_select_penultimocarico = """SELECT prezzo_carico FROM movimenti WHERE entrata IS NOT NULL ORDER BY id DESC      
     LIMIT 1 OFFSET 1 """
     sql_select_ultimocarico = """ SELECT * FROM movimenti WHERE entrata IS NOT NULL ORDER BY id DESC LIMIT 1; """
     sql_select_giacenza = """ SELECT giacenza FROM movimenti ORDER BY id DESC LIMIT 1; """
@@ -110,20 +96,17 @@ def scarico(conn):
         cursor = select_query(conn, sql_select_penultimocarico)
         for row in cursor:
             penultimo_valore_carico = row['prezzo_carico']
-
         cursor = select_query(conn, sql_select_ultimocarico)
         for row in cursor:
             ultimo_carico = row['entrata']
             ultimo_valore_carico = row['prezzo_carico']
-
         cursor = select_query(conn, sql_select_giacenza)
         for row in cursor:
             ultima_giacenza = row['giacenza']
         nuova_giacenza = (ultima_giacenza - scarico)
         if (nuova_giacenza - ultimo_carico) > 0:
-            val_medio = round((((
-                                            nuova_giacenza - ultimo_carico) * penultimo_valore_carico) + ultimo_carico * ultimo_valore_carico) / nuova_giacenza,
-                              3)
+            val_medio = round((((nuova_giacenza - ultimo_carico) * penultimo_valore_carico) +
+                              ultimo_carico * ultimo_valore_carico) / nuova_giacenza, 3)
         else:
             val_medio = round(ultimo_valore_carico, 3)
         sql_insert_giacenza = """INSERT INTO movimenti (date, uscita, prezzo_medio, giacenza) VALUES 
@@ -155,25 +138,23 @@ def val_giacenza(conn):
 def menu(conn):
     choice = int(input('Scegliere operazione:\n 1- Carico \n 2- Scarico \n 3- Visualizza Movimenti \n 4- Valore Medio '
                        'Giacenza \n 5- Exit \n'))
-
     if choice == 1:
         carico(conn)
         menu(conn)
-
     elif choice == 2:
         scarico(conn)
         menu(conn)
-
     elif choice == 3:
         movimenti(conn)
         menu(conn)
-
     elif choice == 4:
         val_giacenza(conn)
         menu(conn)
-
     elif choice == 5:
         exit()
+    else:
+        print('Scelta non valida, riprovare')
+        menu(conn)
 
 
 def main():
